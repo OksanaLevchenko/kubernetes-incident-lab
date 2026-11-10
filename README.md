@@ -1,39 +1,47 @@
-# kubernetes-troubleshooting-zero-to-hero
-Learn how to troubleshoot the most common Kubernetes Issues
+# Kubernetes Incident Lab
 
-## Day-01
+This project is a hands on troubleshooting lab for common Kubernetes failure scenarios. I use it to reproduce problems, inspect what Kubernetes is reporting, and work through the recovery path instead of only reading about the error.
+
+## Scenarios
 
 ### ImagePullBackOff
 
-Video Link - https://youtu.be/vGab4v3RWEw
+A pod cannot start because Kubernetes cannot pull the container image.
 
-When a kubelet starts creating containers for a Pod using a container runtime, it might be possible the container is in Waiting state because of ImagePullBackOff.
+Typical causes include:
 
-The status ImagePullBackOff means that a container could not start because Kubernetes could not pull a container image for reasons such as 
+* invalid image names
+* missing or incorrect image pull secrets
+* private registry authentication problems
 
-- Invalid image name or 
-- Pulling from a private registry without imagePullSecret. 
-
-The BackOff part indicates that Kubernetes will keep trying to pull the image, with an increasing back-off delay.
-
-Kubernetes raises the delay between each attempt until it reaches a compiled-in limit, which is 300 seconds (5 minutes).
-
-
-## Day-02
+The useful part of this scenario is learning to inspect pod events and separate an image problem from an application problem.
 
 ### CrashLoopBackOff
 
-When you see "CrashLoopBackOff," it means that kubelet is trying to run the container, but it keeps failing and crashing. After crashing, Kubernetes tries to restart the container automatically, but if the container keeps failing repeatedly, you end up in a loop of crashes and restarts, thus the term "CrashLoopBackOff." 
+A container starts, fails, and Kubernetes keeps restarting it.
 
-This situation indicates that something is wrong with the application or the configuration that needs to be fixed.
+This scenario is useful for practicing:
 
-## Day-03
+* pod and container status inspection
+* logs from the current and previous container
+* configuration and startup failures
+* readiness and liveness related issues
 
 ### Pods not schedulable
 
-In Kubernetes, the scheduler is responsible for assigning pods to nodes in the cluster based on various criteria. Sometimes, you might encounter situations where pods are not being scheduled as expected. This can happen due to factors such as node constraints, pod requirements, or cluster configurations.
+A pod remains pending because the scheduler cannot place it on a node.
 
-1. Node Selector
-2. Node Affinity
-3. Taints
-4. Tolerations
+The lab covers common scheduling controls such as:
+
+* node selectors
+* node affinity
+* taints
+* tolerations
+
+## Why I keep this lab
+
+Kubernetes troubleshooting is easier when I can reproduce a failure and follow the evidence from pod status, events, logs, scheduling rules, and node conditions. I use this repository as a practical incident sandbox for that workflow.
+
+## Next improvements
+
+I plan to add more scenarios around resource pressure, probes, networking, DNS, storage, and autoscaling so the repository becomes a broader production troubleshooting lab.
